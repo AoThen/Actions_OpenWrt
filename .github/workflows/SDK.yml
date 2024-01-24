@@ -118,8 +118,9 @@ jobs:
             cd $sdk
             ./scripts/feeds update -a && ./scripts/feeds install -a
             make download -j8 V=s
-            echo 'luci-app-adguardhome=y' > .config
+            echo CONFIG_ALL=y >.config
             make defconfig
+            make package/feeds/luci/luci-base/compile V=99
             make package/luci-app-adguardhome/compile -j$(nproc) || make package/luci-app-adguardhome/compile -j1 V=sc || exit 0
             cd ${{ github.workspace }}
             mkdir -p ${{ github.workspace }}/artifact
