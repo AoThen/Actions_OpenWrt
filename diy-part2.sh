@@ -42,8 +42,8 @@ rm -rf feeds/packages/net/v2ray-geodata
 git clone --depth 1 https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 git clone --depth 1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
 git clone --depth 1 https://github.com/vernesong/OpenClash.git package/luci-app-openclash
-git clone --depth 1 https://github.com/rufengsuixing/luci-app-adguardhome.git package/luci-app-adguardhome
-git clone --depth 1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+git clone --depth 1 https://github.com/AoThen/luci-app-adguardhome.git package/luci-app-adguardhome
+# git clone --depth 1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
 git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/jerrykuku/luci-theme-argon
 git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git package/jerrykuku/luci-app-argon-config
 
