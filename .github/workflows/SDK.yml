@@ -120,15 +120,15 @@ jobs:
           wget -O openwrt-sdk.tar.xz ${{ matrix.sdk_url }}
           xz -q -d openwrt-sdk.tar.xz && tar -xvf openwrt-sdk.tar
           mv -f openwrt-sdk-* openwrt-sdk
+          ls openwrt-sdk
 
       - name: Build Package
         run: |
-          echo 'CONFIG_PACKAGE_netbird=y
+          echo 'CONFIG_ALL=y
           ' >> openwrt-sdk/.config
           cd openwrt-sdk
           echo "src-git cdnspeedtest https://github.com/immortalwrt-collections/openwrt-cdnspeedtest.git" >> "feeds.conf.default"
           echo "src-git cloudflarespeedtest https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest.git" >> "feeds.conf.default"
-          cat feeds.conf
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           make defconfig
