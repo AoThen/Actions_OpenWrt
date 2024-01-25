@@ -12,7 +12,9 @@ name: SDK
 
 on:
   workflow_dispatch:
-
+  push:
+    paths:
+      - '.github\workflows\SDK.yml'
 
 
 env:
@@ -103,40 +105,71 @@ jobs:
           sudo -E apt-get -qq clean
           sudo timedatectl set-timezone "$TZ"
 
-      - name: Download SDK
+      # - name: Download SDK
+      #   run: |
+      #       url=${{ matrix.sdk_url }}
+      #       sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
+      #       wget $url
+      #       tar xvf $sdk.tar.xz
+      #       mkdir -p $sdk/package
+
+
+
+      - name: Install OpenWrt SDK
         run: |
-            url=${{ matrix.sdk_url }}
-            sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
-            wget $url
-            tar xvf $sdk.tar.xz
-            mkdir -p $sdk/package
+          wget -O openwrt-sdk.tar.xz ${{ matrix.sdk_url }}
+          xz -q -d openwrt-sdk.tar.xz && tar -xvf openwrt-sdk.tar
+          mv -f openwrt-sdk-* openwrt-sdk
 
-            echo "src-git cdnspeedtest https://github.com/immortalwrt-collections/openwrt-cdnspeedtest.git" >> "feeds.conf.default"
-            echo "src-git cloudflarespeedtest https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest.git" >> "feeds.conf.default"
-
-
-      - name: Compile
+      - name: Build Package
         run: |
-            url=${{ matrix.sdk_url }}
-            sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
-            cd $sdk
-            ./scripts/feeds update -a && ./scripts/feeds install -a
-            make download -j8 V=s
-            echo CONFIG_ALL=y >.config
-            make defconfig
-            make package/feeds/luci/luci-base/compile V=99
-            make package/feeds/cdnspeedtest/cdnspeedtest/compile -j$(nproc) || make package/feeds/cdnspeedtest/cdnspeedtest/compile -j1 V=sc || exit 0
-            make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j$(nproc) || make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j1 V=sc || exit 0
-            cd ${{ github.workspace }}
-            mkdir -p ${{ github.workspace }}/artifact
-            for ipk in `find . -name '*speedtest*.ipk'`; do
-                cp $ipk ${{ github.workspace }}/artifact
-            done
-      - name: Upload build artifacts
+          echo 'CONFIG_PACKAGE_netbird=y
+          ' >> openwrt-sdk/.config
+          cd openwrt-sdk
+          echo "src-git cdnspeedtest https://github.com/immortalwrt-collections/openwrt-cdnspeedtest.git" >> "feeds.conf.default"
+          echo "src-git cloudflarespeedtest https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest.git" >> "feeds.conf.default"
+          cat feeds.conf
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          make defconfig
+          make package/feeds/cdnspeedtest/cdnspeedtest/compile -j$(nproc) || make package/feeds/cdnspeedtest/cdnspeedtest/compile -j1 V=sc || exit 0
+          make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j$(nproc) || make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j1 V=sc || exit 0
+
+          tree bin/packages/
+          mkdir -p ${{ github.workspace }}/artifact
+          for ipk in `find . -name '*speedtest*.ipk'`; do
+              cp $ipk ${{ github.workspace }}/artifact
+          done
+      - name: Archive package
         uses: actions/upload-artifact@v2
         with:
-            name: luci-app-adguardhome
-            path: ${{ github.workspace }}/artifact/**/*
+          name: ipks
+          path: ${{ github.workspace }}/artifact/**/*
+          if-no-files-found: error
+
+
+      # - name: Compile
+      #   run: |
+      #       url=${{ matrix.sdk_url }}
+      #       sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
+      #       cd $sdk
+      #       ./scripts/feeds update -a && ./scripts/feeds install -a
+      #       make download -j8 V=s
+      #       echo CONFIG_ALL=y >.config
+      #       make defconfig
+      #       make package/feeds/luci/luci-base/compile V=99
+      #       make package/feeds/cdnspeedtest/cdnspeedtest/compile -j$(nproc) || make package/feeds/cdnspeedtest/cdnspeedtest/compile -j1 V=sc || exit 0
+      #       make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j$(nproc) || make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j1 V=sc || exit 0
+      #       cd ${{ github.workspace }}
+      #       mkdir -p ${{ github.workspace }}/artifact
+      #       for ipk in `find . -name '*speedtest*.ipk'`; do
+      #           cp $ipk ${{ github.workspace }}/artifact
+      #       done
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #       name: luci-app-adguardhome
+      #       path: ${{ github.workspace }}/artifact/**/*
 
 
 

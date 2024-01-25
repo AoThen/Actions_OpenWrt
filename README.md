@@ -11,5 +11,14 @@
 - luci-theme-argon
 - luci-app-adguardhome
 
+
+## 官方openwrt SDK 编译IPK包
+- OpenClash
+- mosdns
+- netspeedtest
+- luci-theme-argon
+- luci-app-adguardhome
+
+
 参考
 https://github.com/coolsnowwolf/lede/issues/11665
