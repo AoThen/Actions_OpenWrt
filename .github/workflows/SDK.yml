@@ -122,26 +122,52 @@ jobs:
           mv -f openwrt-sdk-* openwrt-sdk
           ls openwrt-sdk
 
-      - name: Build Package
+
+      - name: Build Package adguardhome
         run: |
           echo 'CONFIG_ALL=y
           ' >> openwrt-sdk/.config
           cd openwrt-sdk
-          echo "src-git cdnspeedtest https://github.com/immortalwrt-collections/openwrt-cdnspeedtest.git" >> "feeds.conf.default"
-          echo "src-git cloudflarespeedtest https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest.git" >> "feeds.conf.default"
+          echo "src-git adguardhome https://github.com/AoThen/luci-app-adguardhome.git" >> "feeds.conf.default"
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           make defconfig
+          
           make package/feeds/cdnspeedtest/cdnspeedtest/compile -j$(nproc) || make package/feeds/cdnspeedtest/cdnspeedtest/compile -j1 V=sc || exit 0
-          make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j$(nproc) || make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j1 V=sc || exit 0
 
           tree bin/packages/
           mkdir -p ${{ github.workspace }}/artifact
-          for ipk in `find . -name '*speedtest*.ipk'`; do
+          for ipk in `find . -name '*adguardhome*.ipk'`; do
               cp $ipk ${{ github.workspace }}/artifact
           done
+
+
+
+      # - name: Build Package cloudflarespeedtest
+      #   run: |
+      #     echo 'CONFIG_ALL=y
+      #     ' >> openwrt-sdk/.config
+      #     cd openwrt-sdk
+      #     echo "src-git cdnspeedtest https://github.com/immortalwrt-collections/openwrt-cdnspeedtest.git" >> "feeds.conf.default"
+      #     echo "src-git cloudflarespeedtest https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest.git" >> "feeds.conf.default"
+      #     ./scripts/feeds update -a
+      #     ./scripts/feeds install -a
+      #     make defconfig
+      #     make package/feeds/cdnspeedtest/cdnspeedtest/compile -j$(nproc) || make package/feeds/cdnspeedtest/cdnspeedtest/compile -j1 V=sc || exit 0
+      #     make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j$(nproc) || make package/feeds/cloudflarespeedtest/luci-app-cloudflarespeedtest/compile -j1 V=sc || exit 0
+
+      #     tree bin/packages/
+      #     mkdir -p ${{ github.workspace }}/artifact
+      #     for ipk in `find . -name '*speedtest*.ipk'`; do
+      #         cp $ipk ${{ github.workspace }}/artifact
+      #     done
+      #     for ipk in `find . -name '*openssl-util*.ipk'`; do
+      #         cp $ipk ${{ github.workspace }}/artifact
+      #     done
+
+
       - name: Archive package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@main
         with:
           name: ipks
           path: ${{ github.workspace }}/artifact/**/*
@@ -243,7 +269,7 @@ jobs:
     #       path: ${{ env.FIRMWARE }}
 
       - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
+        uses: AoThen/delete-workflow-runs@main
         with:
           retain_days: 1
           keep_minimum_runs: 5
