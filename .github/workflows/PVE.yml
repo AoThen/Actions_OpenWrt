@@ -12,10 +12,7 @@ name: PVE
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github\workflows\PVE.yml'
-      - 'OpenWrt_PVE.config'
+
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
