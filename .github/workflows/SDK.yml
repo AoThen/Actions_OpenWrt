@@ -32,13 +32,15 @@ permissions:
 
 jobs:
 
-  build:
+  release:
+    name: Build for ${{ matrix.arch }}
     runs-on: ubuntu-22.04
     strategy:
         fail-fast: false
         matrix:
-          sdk_url:
-            - https://downloads.openwrt.org/releases/23.05.2/targets/x86/64/openwrt-sdk-23.05.2-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+          include:
+            - arch: x86_64
+              sdk_url: https://downloads.openwrt.org/releases/23.05.2/targets/x86/64/openwrt-sdk-23.05.2-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
 
 # - https://downloads.openwrt.org/releases/21.02.7/targets/x86/64/openwrt-sdk-21.02.7-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
 # - https://downloads.openwrt.org/releases/22.03.5/targets/x86/64/openwrt-sdk-22.03.5-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
@@ -124,7 +126,7 @@ jobs:
           echo 'CONFIG_ALL=y
           ' >> openwrt-sdk/.config
           cd openwrt-sdk
-          echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
+          echo "src-git passwallpackages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
           echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "feeds.conf.default"
           echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
           ./scripts/feeds update -a
