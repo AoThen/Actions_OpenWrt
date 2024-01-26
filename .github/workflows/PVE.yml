@@ -196,7 +196,7 @@ jobs:
         uses: actions/upload-artifact@main
         if: ${{ steps.organize.outputs.status }} == 'success'
         with:
-          name: OpenWrt_firmware$DEVICE_NAME$FILE_DATE
+          name: OpenWrt_firmware${{ steps.compile.outputs.DEVICE_NAME }}${{ steps.compile.outputs.FILE_DATE }}
           path: ${{ steps.organize.outputs.FIRMWARE }}
 
       - name: Delete workflow runs
