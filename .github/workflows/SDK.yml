@@ -12,9 +12,7 @@ name: SDK
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github\workflows\SDK.yml'
+
 
 
 env:
@@ -26,8 +24,6 @@ env:
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: false
   TZ: Asia/Shanghai
 
@@ -100,7 +96,7 @@ jobs:
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /etc/mysql /etc/php
           sudo -E apt-get -y purge azure-cli* docker* ghc* zulu* hhvm* llvm* firefox* google* dotnet* aspnetcore* powershell* openjdk* adoptopenjdk* mysql* php* mongodb* moby* snap* || true
           sudo -E apt-get -qq update
-          sudo -E apt-get -qq install libfuse-dev $(curl -fsSL git.io/depends-ubuntu-2204)
+          sudo -E apt-get -qq install binutils bzip2 diff find flex gawk gcc-6+ getopt grep install libc-dev libz-dev make4.1+ perl python3.7+ rsync subversion unzip which build-essential clang bison g++ gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev python3-distutils zlib1g-dev file wget
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
           sudo timedatectl set-timezone "$TZ"
@@ -141,11 +137,11 @@ jobs:
 
           make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc) || make package/feeds/passwall2/luci-app-passwall2/compile -j1 V=sc || exit 0
 
-          pkgs=$(ls package/feeds/passwall_packages)
+          pkgs=$(ls package/feeds/passwallpackages)
           for pkg in $pkgs
           do
               echo $pkg
-              make V=s package/feeds/passwall_packages/$pkg/compile -j$(nproc) || make package/feeds/passwall_packages/$pkg/compile -j1 V=sc || exit 0
+              make V=s package/feeds/passwallpackages/$pkg/compile -j$(nproc) || make package/feeds/passwallpackages/$pkg/compile -j1 V=sc || exit 0
           done
           
           tree bin/packages/
@@ -203,7 +199,7 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: ipks
-          path: ${{ github.workspace }}/artifact/**/*
+          path: ${{ github.workspace }}/artifact
           if-no-files-found: error
 
 
