@@ -12,7 +12,9 @@ name: PVE
 
 on:
   workflow_dispatch:
-
+  push:
+    paths:
+      - 'OpenWrt_PVE.config'
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
@@ -153,8 +155,8 @@ jobs:
           echo "status=success" >> "$GITHUB_OUTPUT"
 
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-          echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_OUTPUT
+          echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_OUTPUT
 
           cd bin
           mkdir -p ${{ github.workspace }}/artifact
@@ -170,7 +172,7 @@ jobs:
         uses: actions/upload-artifact@main
         if: ${{ steps.compile.outputs.status }} == 'success'
         with:
-          name: OpenWrt_ipk$DEVICE_NAME$FILE_DATE
+          name: OpenWrt_ipk${{ steps.compile.outputs.DEVICE_NAME }}${{ steps.compile.outputs.FILE_DATE }}
           path: ${{ github.workspace }}/artifact
 
       # - name: Upload bin directory
@@ -187,6 +189,7 @@ jobs:
           cd openwrt/bin/targets/*/*
           rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          echo "FIRMWARE=$PWD" >> "$GITHUB_OUTPUT"
           echo "status=success" >> "$GITHUB_OUTPUT"
 
       - name: Upload firmware directory
@@ -194,7 +197,7 @@ jobs:
         if: ${{ steps.organize.outputs.status }} == 'success'
         with:
           name: OpenWrt_firmware$DEVICE_NAME$FILE_DATE
-          path: $FIRMWARE
+          path: ${{ steps.organize.outputs.FIRMWARE }}
 
       - name: Delete workflow runs
         uses: AoThen/delete-workflow-runs@main
