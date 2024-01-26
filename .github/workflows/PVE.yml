@@ -156,6 +156,12 @@ jobs:
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
+          cd bin
+          mkdir -p ${{ github.workspace }}/artifact
+          for ipk in `find . -name '*.ipk'`; do
+              cp $ipk ${{ github.workspace }}/artifact
+          done
+
       - name: Check space usage
         if: (!cancelled())
         run: df -hT
@@ -165,9 +171,7 @@ jobs:
         if: ${{ steps.compile.outputs.status }} == 'success'
         with:
           name: OpenWrt_ipk$DEVICE_NAME$FILE_DATE
-          path: |
-            packages/**/packages
-            packages/**/base
+          path: ${{ github.workspace }}/artifact
 
       # - name: Upload bin directory
       #   uses: actions/upload-artifact@main
