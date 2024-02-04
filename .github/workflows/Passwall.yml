@@ -34,7 +34,8 @@ jobs:
             src-git|passwall_luci|https://github.com/xiaorouji/openwrt-passwall;main
             src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2;main
           GOLANG_COMMIT: openwrt-23.05
-            # V: s
+          V: s
+          IGNORE_ERRORS: n m y
 
       - name: Store packages
         uses: actions/upload-artifact@main
