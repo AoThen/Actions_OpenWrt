@@ -11,7 +11,7 @@ on:
         required: false
         type: boolean
         default: false
-  push:
+  # push:
 
 env:
   TZ: Asia/Shanghai

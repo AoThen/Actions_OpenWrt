@@ -1,0 +1,47 @@
+name: Build Passwall
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  actions: write
+
+jobs:
+  build:
+    name: ${{ matrix.arch }}-${{ matrix.branch }} build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - x86_64
+          - aarch64_cortex-a53
+        branch:
+          - openwrt-21.02
+          - openwrt-23.05
+    steps:
+      - name: Building packages
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: Build
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
+          EXTRA_FEEDS: >-
+            src-git|passwall_packages|https://github.com/xiaorouji/openwrt-passwall-packages;main
+            src-git|passwall_luci|https://github.com/xiaorouji/openwrt-passwall;main
+            src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2;main
+
+      - name: Store packages
+        uses: actions/upload-artifact@main
+        with:
+          name: Passwall-${{ matrix.arch}}-${{ matrix.branch }}
+          path: bin/packages/${{ matrix.arch }}/passwall*/*.ipk
+
+      - name: Delete workflow runs
+        uses: AoThen/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 5
