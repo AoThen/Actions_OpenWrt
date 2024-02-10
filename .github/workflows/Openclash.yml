@@ -1,8 +1,8 @@
-name: Build Passwall
+name: Build Openclash
 
 on:
   workflow_dispatch:
-  # push:
+  push:
 
 permissions:
   actions: write
@@ -17,8 +17,8 @@ jobs:
           - x86_64
           - aarch64_cortex-a53
         branch:
-          - openwrt-23.05
-            # - openwrt-21.02
+            - openwrt-21.02
+        #   - openwrt-23.05
     steps:
       - name: Building packages
         uses: actions/checkout@main
@@ -30,16 +30,14 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
           EXTRA_FEEDS: >-
-            src-git|passwall_packages|https://github.com/xiaorouji/openwrt-passwall-packages;main
-            src-git|passwall_luci|https://github.com/xiaorouji/openwrt-passwall;main
-            src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2;main
+            src-git|OpenClash|https://github.com/vernesong/OpenClash.git;master
           # GOLANG_COMMIT: openwrt-23.05
 
       - name: Store packages
         uses: actions/upload-artifact@main
         with:
-          name: Passwall-${{ matrix.arch}}-${{ matrix.branch }}
-          path: bin/packages/${{ matrix.arch }}/passwall*/*.ipk
+          name: Openclash-${{ matrix.arch}}-${{ matrix.branch }}
+          path: bin/packages/${{ matrix.arch }}/*openclash*/*.ipk
 
       - name: Delete workflow runs
         uses: AoThen/delete-workflow-runs@main
