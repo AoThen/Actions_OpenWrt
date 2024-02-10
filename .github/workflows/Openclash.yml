@@ -14,11 +14,11 @@ jobs:
     strategy:
       matrix:
         arch:
-          - x86_64
-          - aarch64_cortex-a53
+            - aarch64_cortex-a53
+        #   - x86_64
         branch:
-            - openwrt-23.05
-            # - openwrt-21.02
+            - openwrt-21.02
+            # - openwrt-23.05
     steps:
     #   - name: Building packages
     #     uses: actions/checkout@main
@@ -34,6 +34,7 @@ jobs:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
           FEEDNAME: packages_ci
           PACKAGES: luci-app-openclash
+          NO_REFRESH_CHECK: true
 
       - name: Store packages
         uses: actions/upload-artifact@main
