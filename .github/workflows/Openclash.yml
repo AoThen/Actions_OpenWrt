@@ -26,7 +26,10 @@ jobs:
     #       fetch-depth: 0
 
       - name: Building packages
-        run: git clone --depth 1 https://github.com/vernesong/OpenClash.git luci-app-openclash
+        run: |
+            git clone --depth 1 https://github.com/vernesong/OpenClash.git luci-app-openclash2
+            mv luci-app-openclash2/luci-app-openclash .
+            rm -rf luci-app-openclash2
 
       - name: Build
         uses: openwrt/gh-action-sdk@main
