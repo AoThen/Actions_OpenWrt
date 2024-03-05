@@ -1,4 +1,4 @@
-name: SDK Build IPK
+name: SDK Build Passwall
 
 on:
   workflow_dispatch:
@@ -175,6 +175,10 @@ jobs:
             cd openwrt-sdk
             tree bin/packages/
             mkdir -p ${{ github.workspace }}/artifact
+            cd bin/packages/x86_64
+            rm -rf base
+            rm -rf luci
+            rm -rf packages
             for ipk in `find . -name '*.ipk'`; do
                 cp $ipk ${{ github.workspace }}/artifact
             done

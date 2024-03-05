@@ -1,4 +1,4 @@
-name: Build Passwall
+name: Build gh-action-sdk Passwall
 
 on:
   workflow_dispatch:
