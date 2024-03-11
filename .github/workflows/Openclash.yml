@@ -2,7 +2,7 @@ name: Build Openclash
 
 on:
   workflow_dispatch:
-  push:
+  # push:
 
 permissions:
   actions: write
