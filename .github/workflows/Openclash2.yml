@@ -59,8 +59,9 @@ jobs:
         run: |
           echo ${{ steps.version.outputs.version }}
           cd ..
-          echo "version=$(grep 'PKG_VERSION:=' ./tmp/SDK/package/luci-app-openclash/Makefile |awk -F '=' '{print $2}')"
-          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_"$version"-beta_all.ipk" "${{ github.workspace }}/"
+          PKGversion=$(grep 'PKG_VERSION:=' ./tmp/SDK/package/luci-app-openclash/Makefile | awk -F '=' '{print $2}')
+          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_${PKGversion}-beta_all.ipk" "${{ github.workspace }}/"
+
 
       - name: Store packages
         uses: actions/upload-artifact@main
