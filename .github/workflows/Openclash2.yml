@@ -3,7 +3,10 @@ name: Compile The New Version OpenClash
 
 on: 
   workflow_dispatch:
-  push:
+#   push:
+
+permissions:
+  actions: write
 
 jobs:
   Compile:
