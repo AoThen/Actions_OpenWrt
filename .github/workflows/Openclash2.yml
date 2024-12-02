@@ -41,7 +41,6 @@ jobs:
 
       - name: Copy OpenClash Source Codes
         run: |
-          PWD
           echo ${{ github.workspace }}
           cd ..
           mkdir tmp/SDK/package/luci-app-openclash
