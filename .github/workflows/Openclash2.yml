@@ -41,9 +41,12 @@ jobs:
 
       - name: Copy OpenClash Source Codes
         run: |
+          PWD
+          echo ${{ github.workspace }}
           cd ..
           mkdir tmp/SDK/package/luci-app-openclash
-          cp -rf "./${{ github.workspace }}/." "./tmp/SDK/package/luci-app-openclash/"
+          ls
+          cp -rf "${{ github.workspace }}/." "./tmp/SDK/package/luci-app-openclash/"
 
       - name: Compile po2lmo
         run: |
