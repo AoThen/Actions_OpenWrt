@@ -54,7 +54,11 @@ jobs:
           cd ..
           cd tmp/SDK
           make package/luci-app-openclash/compile V=99
-          cp "./bin/ar71xx/packages/base/luci-app-openclash_*.ipk" "${{ github.workspace }}/"
+          
+      - name: Copy OpenClash IPK
+        run: |
+          cd ..
+          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_${{ needs.Get-Version.outputs.version }}-beta_all.ipk" "${{ github.workspace }}/luci-app-openclash_${{ needs.Get-Version.outputs.version }}-beta_all.ipk"
 
       - name: Store packages
         uses: actions/upload-artifact@main
