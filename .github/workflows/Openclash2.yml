@@ -57,8 +57,10 @@ jobs:
           
       - name: Copy OpenClash IPK
         run: |
+          echo ${{ steps.version.outputs.version }}
           cd ..
-          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_${{ steps.version.outputs.version }}-beta_all.ipk" "${{ github.workspace }}/"
+          echo "version=$(grep 'PKG_VERSION:=' ./tmp/SDK/package/luci-app-openclash/Makefile |awk -F '=' '{print $2}')"
+          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_"$version"-beta_all.ipk" "${{ github.workspace }}/"
 
       - name: Store packages
         uses: actions/upload-artifact@main
