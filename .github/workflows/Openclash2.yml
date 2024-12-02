@@ -33,7 +33,7 @@ jobs:
       - name: Building packages
         run: |
             git clone --depth 1 https://github.com/vernesong/OpenClash.git luci-app-openclash2
-            cp -rf "luci-app-openclash2/luci-app-openclash" "./tmp/SDK/package/"
+            cp -rf "luci-app-openclash2/luci-app-openclash" "../tmp/SDK/package/"
 
       - name: Version
         id: version
