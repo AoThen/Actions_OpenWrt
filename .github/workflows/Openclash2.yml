@@ -59,4 +59,10 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: Openclash
-          path: ./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash*.ipk
+          path: ../tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash*.ipk
+
+      - name: Delete workflow runs
+        uses: AoThen/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 5
