@@ -6,26 +6,11 @@ on:
   push:
 
 jobs:
-  Get-Version:
+  Compile:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Building packages
-        run: |
-            git clone --depth 1 https://github.com/vernesong/OpenClash.git luci-app-openclash2
-            mv luci-app-openclash2/luci-app-openclash .
-            rm -rf luci-app-openclash2
-            echo ${{ github.workspace }}
-            cd
-            ls
-
-      - name: New Version
-        id: version
-        run: |
-          echo "version=$(grep 'PKG_VERSION:=' ./luci-app-openclash/Makefile |awk -F '=' '{print $2}')" >> $GITHUB_OUTPUT
-          echo "New Version: $(grep 'PKG_VERSION:=' ./luci-app-openclash/Makefile |awk -F '=' '{print $2}')"
-
       - name: Apt Update
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -41,12 +26,20 @@ jobs:
           cd \tmp
           tar xjf SDK.tar.bz2
           mv "OpenWrt-SDK-15.05.1-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64" "SDK"
-
-      - name: Copy OpenClash Source Codes
-        run: |
           cd ..
           mkdir tmp/SDK/package/luci-app-openclash
-          cp -rf "${{ github.workspace }}/" "./tmp/SDK/package/luci-app-openclash/"
+
+
+      - name: Building packages
+        run: |
+            git clone --depth 1 https://github.com/vernesong/OpenClash.git luci-app-openclash2
+            cp -rf "luci-app-openclash2/luci-app-openclash" "./tmp/SDK/package/"
+
+      - name: Version
+        id: version
+        run: |
+          echo "version=$(grep 'PKG_VERSION:=' ./luci-app-openclash/Makefile |awk -F '=' '{print $2}')" >> $GITHUB_OUTPUT
+          echo "New Version: $(grep 'PKG_VERSION:=' ./luci-app-openclash/Makefile |awk -F '=' '{print $2}')"
 
       - name: Compile po2lmo
         run: |
