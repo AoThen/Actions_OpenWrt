@@ -19,8 +19,6 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT }}
 
       - name: Compare version
         id: compare_version
@@ -40,7 +38,7 @@ jobs:
             passwall: xiaorouji/openwrt-passwall@${{ steps.compare_version.outputs.passwall }}
             passwall2: xiaorouji/openwrt-passwall2@${{ steps.compare_version.outputs.passwall2 }}
             packages: xiaorouji/openwrt-passwall-packages@${{ steps.compare_version.outputs.packages }}
-            
+
   generate_matrix:
     name: Set matrix
     runs-on: ubuntu-latest
@@ -49,9 +47,9 @@ jobs:
     strategy:
       matrix:
         ref:
-          - main
-          - openwrt-21.02
-          - openwrt-23.05
+        #   - main
+        #   - openwrt-21.02
+        #   - openwrt-23.05
           - openwrt-24.10
     steps:
       - name: Checkout
