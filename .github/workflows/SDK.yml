@@ -30,6 +30,8 @@ jobs:
           include:
             - arch: x86_64
               sdk_url: https://downloads.openwrt.org/releases/23.05.2/targets/x86/64/openwrt-sdk-23.05.2-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+            - arch: x86_64
+              sdk_url: https://downloads.openwrt.org/releases/24.10.0-rc2/targets/x86/64/openwrt-sdk-24.10.0-rc2-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst
             # - arch: aarch64_cortex-a53
             #   sdk_url: https://downloads.openwrt.org/releases/23.05.2/targets/x86/64/openwrt-sdk-23.05.2-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
 
@@ -125,7 +127,7 @@ jobs:
           ./scripts/feeds install -a
 
           rm -rf feeds/packages/lang/golang
-          git clone --depth 1 https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
+          git clone --depth 1 https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
 
           make defconfig
           make package/feeds/luci/luci-base/compile -j$(nproc)
