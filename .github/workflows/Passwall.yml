@@ -2,7 +2,7 @@ name: Build gh-action-sdk Passwall
 
 on:
   workflow_dispatch:
-  # push:
+  push:
 
 permissions:
   actions: write
@@ -15,9 +15,10 @@ jobs:
       matrix:
         arch:
           - x86_64
-          - aarch64_cortex-a53
+          # - aarch64_cortex-a53
         branch:
-          - openwrt-23.05
+          - openwrt-24.10
+          # - openwrt-23.05
             # - openwrt-21.02
     steps:
       - name: Building packages

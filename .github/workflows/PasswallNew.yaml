@@ -2,7 +2,7 @@ name: Build and Release Passwall New
 
 on:
   workflow_dispatch:
-  push:
+#   push:
 
 jobs:
   check:
