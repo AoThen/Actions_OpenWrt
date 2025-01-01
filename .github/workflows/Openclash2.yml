@@ -63,7 +63,8 @@ jobs:
           echo ${{ steps.version.outputs.version }}
           cd ..
           PKGversion=$(grep 'PKG_VERSION:=' ./tmp/SDK/package/luci-app-openclash/Makefile | awk -F '=' '{print $2}')
-          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_*.ipk" "${{ github.workspace }}/"
+          find ./tmp/SDK/bin/ -name ".ipk"
+          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_${PKGversion}-beta_all.ipk" "${{ github.workspace }}/"
 
 
       - name: Store packages
