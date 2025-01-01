@@ -64,7 +64,7 @@ jobs:
           cd ..
           PKGversion=$(grep 'PKG_VERSION:=' ./tmp/SDK/package/luci-app-openclash/Makefile | awk -F '=' '{print $2}')
           find ./tmp/SDK/bin/ -name "*.ipk"
-          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash*.ipk" "${{ github.workspace }}/"
+          cp "./tmp/SDK/bin/ar71xx/packages/base/luci-app-openclash_${PKGversion}_all.ipk" "${{ github.workspace }}/"
 
 
       - name: Store packages
