@@ -1,0 +1,206 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
+
+name: PVE
+
+on:
+  workflow_dispatch:
+  # push:
+  #   paths:
+  #     - 'OpenWrt_PVE2.config'
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: OpenWrt_PVE2.config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: false
+  TZ: Asia/Shanghai
+
+permissions:
+  actions: write
+
+jobs:
+
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+
+      - name: Check server configuration
+        run: |
+          echo "警告⚠"
+          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+          echo -e "已知CPU型号（降序）：8370C，8272CL，8171M，E5-2673 \n"
+          echo "--------------------------CPU信息--------------------------"
+          echo "CPU物理数量：$(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
+          echo -e "CPU核心信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+          echo "--------------------------内存信息--------------------------"
+          echo "已安装内存详细信息："
+          echo -e "$(sudo lshw -short -C memory | grep GiB) \n"
+          echo "--------------------------硬盘信息--------------------------"
+          echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT    
+
+
+      # - name: Maximize build space
+      #   uses: easimon/maximize-build-space@master
+      #   with:
+      #       remove-android: "true"
+      #       remove-haskell: "true"
+      #       remove-dotnet: "true"
+      #       remove-docker-images: "true"
+
+      - name: Checkout
+        uses: actions/checkout@main
+
+
+      # - name: Check space usage
+      #   if: (!cancelled())
+      #   run: |
+      #     df -hT
+      #     if [ "$USER" = "runner" ] || [ "$(whoami)" = "runner" ]; then
+      #       echo -e "\n[+] Debloating GH Runner...\n"
+      #         sudo rm /usr/local/lib/android -rf 2>/dev/null
+      #         sudo rm /opt/hostedtoolcache/CodeQL -rf 2>/dev/null
+      #         sudo rm /usr/local/.ghcup -rf 2>/dev/null
+      #         sudo rm /usr/share/dotnet -rf 2>/dev/null
+      #         sudo rm /usr/share/swift -rf 2>/dev/null
+      #         sudo rm /usr/local/share/powershell -rf 2>/dev/null
+      #         sudo rm /usr/local/lib/heroku -rf 2>/dev/null
+      #     fi
+      #     df -hT
+
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /etc/mysql /etc/php
+          sudo -E apt-get -y purge azure-cli* docker* ghc* zulu* hhvm* llvm* firefox* google* dotnet* aspnetcore* powershell* openjdk* adoptopenjdk* mysql* php* mongodb* moby* snap* || true
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install libfuse-dev $(curl -fsSL git.io/depends-ubuntu-2204)
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+
+      - name: Clone source code
+        working-directory: /workdir
+        run: |
+          df -hT $PWD
+          git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+      - name: Load custom feeds
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          chmod +x $DIY_P1_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$DIY_P1_SH
+
+      - name: Update feeds
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Load custom configuration
+        run: |
+          [ -e files ] && mv files openwrt/files
+          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+          chmod +x $DIY_P2_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$DIY_P2_SH
+
+      - name: Download package
+        id: package
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+
+      # - name: Compile the ipk
+      #   id: compile
+      #   run: |
+      #     cd openwrt
+      #     echo -e "$(nproc) thread compile"
+      #     make package/luci-app-adguardhome/compile -j$(nproc) || make package/luci-app-adguardhome/compile -j1 || make package/luci-app-adguardhome/compile  -j1 V=s 
+      #     echo "{status}={success}" >> $GITHUB_STATE
+      #     grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+      #     [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+      #     echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+      - name: Compile the firmware
+        id: compile
+        run: |
+          cd openwrt
+          echo -e "$(nproc) thread compile"
+
+          make -j$(nproc) || make -j1 || make -j1 V=s
+
+          echo "status=success" >> "$GITHUB_OUTPUT"
+
+          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_OUTPUT
+          echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_OUTPUT
+
+          cd bin
+          mkdir -p ${{ github.workspace }}/artifact
+          for ipk in `find . -name '*.ipk'`; do
+              cp $ipk ${{ github.workspace }}/artifact
+          done
+
+      - name: Check space usage
+        if: (!cancelled())
+        run: df -hT
+
+      - name: Upload ipk directory
+        uses: actions/upload-artifact@main
+        if: ${{ steps.compile.outputs.status }} == 'success'
+        with:
+          name: OpenWrt_ipk${{ steps.compile.outputs.DEVICE_NAME }}${{ steps.compile.outputs.FILE_DATE }}
+          path: ${{ github.workspace }}/artifact
+
+      # - name: Upload bin directory
+      #   uses: actions/upload-artifact@main
+      #   if: ${{ steps.compile.outputs.status }} == 'success'
+      #   with:
+      #     name: OpenWrt_bin$DEVICE_NAME$FILE_DATE
+      #     path: openwrt/bin
+
+      - name: Organize files
+        id: organize
+        if: (!cancelled())
+        run: |
+          cd openwrt/bin/targets/*/*
+          rm -rf packages
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          echo "FIRMWARE=$PWD" >> "$GITHUB_OUTPUT"
+          echo "status=success" >> "$GITHUB_OUTPUT"
+
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@main
+        if: ${{ steps.organize.outputs.status }} == 'success'
+        with:
+          name: OpenWrt_firmware${{ steps.compile.outputs.DEVICE_NAME }}${{ steps.compile.outputs.FILE_DATE }}
+          path: ${{ steps.organize.outputs.FIRMWARE }}
+
+      - name: Delete workflow runs
+        uses: AoThen/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 5
