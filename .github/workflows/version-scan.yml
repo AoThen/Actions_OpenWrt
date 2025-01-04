@@ -1,8 +1,8 @@
 name: Scan openwrt-passwall Version
 
 on:
-  schedule:
-    - cron: "0 18 * * *" # every day at UTC+8 2:00AM
+  # schedule:
+  #   - cron: "0 18 * * *" # every day at UTC+8 2:00AM
   workflow_dispatch:
 
 jobs:
