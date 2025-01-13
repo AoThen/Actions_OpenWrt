@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "data": {
+    "packages": {
+      "version": "91caaa15e967c68369b01c957485b1a233929417",
+      "revision": "91caaa15e967c68369b01c957485b1a233929417"
+    },
+    "passwall": {
+      "version": "98712afd4c360e886550cfbb5587912a557a53fe",
+      "revision": "98712afd4c360e886550cfbb5587912a557a53fe"
+    },
+    "passwall2": {
+      "version": "2e9ff90d24866a66afc231506b973a0237aeb8ad",
+      "revision": "2e9ff90d24866a66afc231506b973a0237aeb8ad"
+    }
+  }
+}
