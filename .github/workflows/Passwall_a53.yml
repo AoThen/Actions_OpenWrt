@@ -1,4 +1,4 @@
-name: Build gh-action-sdk Passwall
+name: Build Passwall a53
 
 on:
   workflow_dispatch:
@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         arch:
-          - x86_64
-          # - aarch64_cortex-a53
+          # - x86_64
+          - aarch64_cortex-a53
         branch:
           # - openwrt-24.10
-          - openwrt-23.05
-            # - openwrt-21.02
+          # - openwrt-23.05
+          - openwrt-21.02
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -39,7 +39,7 @@ jobs:
             src-git|passwall_packages|https://github.com/xiaorouji/openwrt-passwall-packages;main
             src-git|passwall_luci|https://github.com/xiaorouji/openwrt-passwall;main
             src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2;main
-          GOLANG_COMMIT: openwrt-24.10
+          GOLANG_COMMIT: openwrt-23.05
 
       - name: Store packages
         uses: actions/upload-artifact@main

@@ -1,4 +1,4 @@
-name: Build and Release Passwall New
+name: Build and Release Passwall All
 
 on:
   workflow_dispatch:

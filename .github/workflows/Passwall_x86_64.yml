@@ -1,4 +1,4 @@
-name: SDK Build Passwall
+name: Build Passwall x86_64
 
 on:
   workflow_dispatch:
