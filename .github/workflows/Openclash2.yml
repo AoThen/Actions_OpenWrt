@@ -1,5 +1,5 @@
 
-name: Compile The New Version OpenClash
+name: Build OpenClash 2
 
 on: 
   workflow_dispatch:
