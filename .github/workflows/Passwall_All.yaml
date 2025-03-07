@@ -47,9 +47,9 @@ jobs:
     strategy:
       matrix:
         ref:
-          # - main
-          - openwrt-21.02
-          - openwrt-23.05
+          - 'main'
+          # - openwrt-21.02
+          # - openwrt-23.05
           # - openwrt-22.03
     steps:
       - name: Checkout
