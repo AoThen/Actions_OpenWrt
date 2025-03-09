@@ -18,3 +18,11 @@
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 # echo 'src-git infinityfreedom https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git' >>feeds.conf.default
 
+
+git clone --depth 1 https://github.com/miaoermua/catwrt_base catwrt_base
+
+cp catwrt_base/amd64/v24.9/base-files/files/bin/config_generate openwrt/package/base-files/files/bin/
+cp catwrt_base/amd64/v24.9/base-files/files/etc/catwrt_release openwrt/package/base-files/files/etc/
+cp catwrt_base/amd64/v24.9/base-files/files/etc/banner openwrt/package/base-files/files/etc/
+cp catwrt_base/amd64/v24.9/base-files/files/etc/banner.failsafe openwrt/package/base-files/files/etc/
+cp catwrt_base/amd64/v24.9/lean/default-settings/files/zzz-default-settings openwrt/package/lean/default-settings/files/

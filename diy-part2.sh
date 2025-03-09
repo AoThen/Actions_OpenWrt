@@ -38,14 +38,14 @@ sed -i 's/192.168.1.1/192.168.100.55/g' package/base-files/files/bin/config_gene
 #添加额外软件包
 
 # remove v2ray-geodata package from feeds (openwrt-22.03 & master)
-rm -rf feeds/packages/net/v2ray-geodata
+# rm -rf feeds/packages/net/v2ray-geodata
 # git clone --depth 1 https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 # git clone --depth 1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
-git clone --depth 1 https://github.com/vernesong/OpenClash.git package/luci-app-openclash
-git clone --depth 1 https://github.com/AoThen/luci-app-adguardhome.git package/luci-app-adguardhome
+# git clone --depth 1 https://github.com/vernesong/OpenClash.git package/luci-app-openclash
+# git clone --depth 1 https://github.com/AoThen/luci-app-adguardhome.git package/luci-app-adguardhome
 # git clone --depth 1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
-git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/jerrykuku/luci-theme-argon
-git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git package/jerrykuku/luci-app-argon-config
+# git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/jerrykuku/luci-theme-argon
+# git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git package/jerrykuku/luci-app-argon-config
 
 #git clone https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter
 # git clone https://github.com/zzsj0928/luci-app-pushbot.git package/luci-app-pushbot
