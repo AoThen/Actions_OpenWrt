@@ -1,5 +1,5 @@
 
-name: Build OpenClash 2
+name: Build OpenClash
 
 on: 
   workflow_dispatch:
