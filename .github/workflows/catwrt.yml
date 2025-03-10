@@ -21,10 +21,8 @@ env:
   CONFIG_FILE: catwrt.config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
-  UPLOAD_BIN_DIR: false
+  UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -77,13 +75,12 @@ jobs:
         # cd openwrt
         # $GITHUB_WORKSPACE/$DIY_P2_SH
 
-        git clone --depth 1 https://github.com/miaoermua/catwrt_base catwrt_base
-
-        cp catwrt_base/amd64/v24.9/base-files/files/bin/config_generate openwrt/package/base-files/files/bin/
-        cp catwrt_base/amd64/v24.9/base-files/files/etc/catwrt_release openwrt/package/base-files/files/etc/
-        cp catwrt_base/amd64/v24.9/base-files/files/etc/banner openwrt/package/base-files/files/etc/
-        cp catwrt_base/amd64/v24.9/base-files/files/etc/banner.failsafe openwrt/package/base-files/files/etc/
-        cp catwrt_base/amd64/v24.9/lean/default-settings/files/zzz-default-settings openwrt/package/lean/default-settings/files/
+        # git clone --depth 1 https://github.com/miaoermua/catwrt_base catwrt_base
+        # cp catwrt_base/amd64/v24.9/base-files/files/bin/config_generate openwrt/package/base-files/files/bin/
+        # cp catwrt_base/amd64/v24.9/base-files/files/etc/catwrt_release openwrt/package/base-files/files/etc/
+        # cp catwrt_base/amd64/v24.9/base-files/files/etc/banner openwrt/package/base-files/files/etc/
+        # cp catwrt_base/amd64/v24.9/base-files/files/etc/banner.failsafe openwrt/package/base-files/files/etc/
+        # cp catwrt_base/amd64/v24.9/lean/default-settings/files/zzz-default-settings openwrt/package/lean/default-settings/files/
 
 
     - name: Download package
@@ -110,12 +107,24 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload bin directory
+    - name: Copy Package
+      run: |
+            cd openwrt
+            tree bin/packages/
+            mkdir -p ${{ github.workspace }}/artifact
+            cd bin/packages/x86_64
+
+            for ipk in `find . -name '*.ipk'`; do
+                mv $ipk ${{ github.workspace }}/artifact
+            done
+
+    - name: Upload ipk directory
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
+        name: OpenWrt_ipk${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ github.workspace }}/artifact
+     #openwrt/bin/targets/*/*
 
     - name: Organize files
       id: organize
@@ -133,23 +142,6 @@ jobs:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    # - name: Upload firmware to cowtransfer
-    #   id: cowtransfer
-    #   if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-    #   run: |
-    #     curl -fsSL git.io/file-transfer | sh
-    #     ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-    #     echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-    #     echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-
-    # - name: Upload firmware to WeTransfer
-    #   id: wetransfer
-    #   if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-    #   run: |
-    #     curl -fsSL git.io/file-transfer | sh
-    #     ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-    #     echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-    #     echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
 
     # - name: Generate release tag
     #   id: tag
