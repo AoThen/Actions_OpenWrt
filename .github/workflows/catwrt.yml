@@ -113,23 +113,24 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Copy Package
+    - name: Show files
       run: |
             cd openwrt
-            tree bin/packages/
-            mkdir -p ${{ github.workspace }}/artifact
-            cd bin/packages/x86_64
+            tree bin/
 
-            for ipk in `find . -name '*.ipk'`; do
-                mv $ipk ${{ github.workspace }}/artifact
-            done
+    # mkdir -p ${{ github.workspace }}/artifact
+    # cd bin/packages/x86_64
+
+    # for ipk in `find . -name '*.ipk'`; do
+    #     mv $ipk ${{ github.workspace }}/artifact
+    # done
 
     - name: Upload ipk directory
       uses: actions/upload-artifact@main
       if: ${{ steps.compile.outputs.status }} == 'success' && env.UPLOAD_BIN_DIR == 'true' && !cancelled()
       with:
         name: OpenWrt_ipk${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ github.workspace }}/artifact
+        path: openwrt/bin/packages
      #openwrt/bin/targets/*/*
 
     - name: Organize files
