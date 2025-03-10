@@ -54,3 +54,12 @@ git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git packa
 #添加smartdns
 #git clone https://github.com/pymumu/openwrt-smartdns package/smartdns
 #git clone -b lede https://github.com/pymumu/luci-app-smartdns.git package/luci-app-smartdns
+
+
+# git clone --depth 1 https://github.com/miaoermua/catwrt_base catwrt_base
+
+# cp catwrt_base/amd64/v24.9/base-files/files/bin/config_generate openwrt/package/base-files/files/bin/
+# cp catwrt_base/amd64/v24.9/base-files/files/etc/catwrt_release openwrt/package/base-files/files/etc/
+# cp catwrt_base/amd64/v24.9/base-files/files/etc/banner openwrt/package/base-files/files/etc/
+# cp catwrt_base/amd64/v24.9/base-files/files/etc/banner.failsafe openwrt/package/base-files/files/etc/
+# cp catwrt_base/amd64/v24.9/lean/default-settings/files/zzz-default-settings openwrt/package/lean/default-settings/files/
