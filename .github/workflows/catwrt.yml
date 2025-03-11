@@ -72,21 +72,19 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+
         
-        sed -i 's/192.168.1.1/192.168.31.5/g' openwrt/package/base-files/files/bin/config_generate
+# sed -i 's/192.168.1.1/192.168.31.5/g' openwrt/package/base-files/files/bin/config_generate
 
-        sed -i '/uci commit system/i uci set system.@system[0].hostname='A_Router'' openwrt/package/lean/default-settings/files/zzz-default-settings
-        
-        sed -i '/exit 0/i uci delete dhcp.lan\nuci commit dhcp' openwrt/package/lean/default-settings/files/zzz-default-settings
+# sed -i '/uci commit system/i uci set system.@system[0].hostname='A_Router'' openwrt/package/lean/default-settings/files/zzz-default-settings
 
+# sed -i '/exit 0/i uci delete dhcp.lan\nuci commit dhcp' openwrt/package/lean/default-settings/files/zzz-default-settings
 
-        sed -i "s/luci-theme-bootstrap/luci-theme-argon/g" openwrt/feeds/luci/collections/luci/Makefile
+# sed -i "s/luci-theme-bootstrap/luci-theme-argon/g" openwrt/feeds/luci/collections/luci/Makefile
 
 # chmod +x $DIY_P2_SH
 # cd openwrt
 # $GITHUB_WORKSPACE/$DIY_P2_SH
-
-
 
 
     - name: Download package
