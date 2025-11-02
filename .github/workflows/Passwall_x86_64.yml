@@ -122,7 +122,7 @@ jobs:
           echo "src-git pspackages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
           echo 'CONFIG_ALL=y' >> .config
           echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "feeds.conf.default"
-          echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
+          # echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -133,7 +133,7 @@ jobs:
           make package/feeds/luci/luci-base/compile -j$(nproc)
 
           make package/feeds/passwall/luci-app-passwall/compile -j$(nproc)
-          make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc)
+          # make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc)
           find . -name "*.ipk" -print
           # make package/feeds/passwall/luci-app-passwall/compile -j$(nproc) || make package/feeds/passwall/luci-app-passwall/compile -j1 V=sc || exit 0
           # make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc) || make package/feeds/passwall2/luci-app-passwall2/compile -j1 V=sc || exit 0
