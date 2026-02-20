@@ -117,14 +117,14 @@ jobs:
           file_name=$(echo ${{matrix.sdk_url}} | awk -F/ '{print $NF}')
           mkdir openwrt-sdk && tar --zstd -x -f $file_name -C ./openwrt-sdk --strip-components=1
           ls openwrt-sdk  
-          echo 'CONFIG_ALL=y' >> openwrt-sdk/.config
+ #echo 'CONFIG_ALL=y' >> openwrt-sdk/.config
 
 
-      - name: Build Package passwall （old）
+      - name: Build Package passwall
         run: |
           cd openwrt-sdk
           cat > feeds.conf.default << EOF
-          src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
+          src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
           src-git base https://github.com/openwrt/openwrt.git;openwrt-${{ matrix.sdk_ver }}
           src-git packages https://github.com/openwrt/packages.git;openwrt-${{ matrix.sdk_ver }}
           src-git luci https://github.com/openwrt/luci.git;openwrt-${{ matrix.sdk_ver }}
@@ -163,11 +163,11 @@ jobs:
           echo "Patch application completed"
           #--------------------------------------end_patches--------------------------------------------
   
-          # echo "CONFIG_ALL_NONSHARED=n" > .config
-          # echo "CONFIG_ALL_KMODS=n" >> .config
-          # echo "CONFIG_ALL=n" >> .config
-          # echo "CONFIG_AUTOREMOVE=n" >> .config
-          # echo "CONFIG_SIGNED_PACKAGES=n" >> .config
+          echo "CONFIG_ALL_NONSHARED=n" > .config
+          echo "CONFIG_ALL_KMODS=n" >> .config
+          echo "CONFIG_ALL=n" >> .config
+          echo "CONFIG_AUTOREMOVE=n" >> .config
+          echo "CONFIG_SIGNED_PACKAGES=n" >> .config
           # make defconfig
 
           make defconfig
