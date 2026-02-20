@@ -6,6 +6,8 @@ on:
 
 jobs:
   check:
+    permissions:
+      contents: write
     name: Check Version
     runs-on: ubuntu-latest
     steps:
