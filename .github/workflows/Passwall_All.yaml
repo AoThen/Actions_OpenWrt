@@ -48,9 +48,6 @@ jobs:
       matrix:
         ref:
           - 'main'
-          # - openwrt-21.02
-          # - openwrt-23.05
-          # - openwrt-22.03
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,38 +55,13 @@ jobs:
           repository: openwrt/openwrt
           ref: ${{ matrix.ref }}
 
-      # - name: Set targets
-      #   id: find_targets
-      #   run: |
-      #     REF=${{ matrix.ref }}
-
-      #     # sdks
-      #     JSON='['
-      #     FIRST=1
-
-      #     while read -r line;
-      #     do
-      #       ARCH=$(echo "$line" | cut -d " " -f 1)
-
-      #       [[ $FIRST -ne 1 ]] && JSON="$JSON"','
-      #       FIRST=0
-
-      #       JSON="$JSON"'{"arch":"'"$ARCH"'","ref":"'"$REF"'"}'
-      #     done <<< $(perl ./scripts/dump-target-info.pl architectures 2>/dev/null)
-
-      #     JSON="$JSON"']'
-      #     echo -e "\n---- sdks ----\n"
-      #     echo "$JSON"
-      #     echo -e "\n---- sdks ----\n"
-      #     echo "sdks=$JSON" >> "$GITHUB_OUTPUT"
-
       - name: Set targets DIY
         id: find_targets
         run: |
           REF=${{ matrix.ref }}
 
           # sdks
-          JSON='[    { "arch": "aarch64_cortex-a53", "ref": "openwrt-21.02" },  { "arch": "x86_64", "ref": "openwrt-23.05" } ]'
+          JSON='[    { "arch": "aarch64_cortex-a53", "ref": "openwrt-21.02" },  { "arch": "x86_64", "ref": "openwrt-24.10" } ]'
           echo -e "\n---- sdks ----\n"
           echo "$JSON"
           echo -e "\n---- sdks ----\n"

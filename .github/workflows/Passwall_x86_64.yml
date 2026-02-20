@@ -122,8 +122,16 @@ jobs:
       - name: Build Package passwall
         run: |
           cd openwrt-sdk
-          echo "src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
-          echo "src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main" >> "feeds.conf.default"
+          
+          cat > feeds.conf.default << EOF
+          src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
+          src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
+          src-git base https://github.com/openwrt/openwrt.git;openwrt-${{ matrix.sdk_ver }}
+          src-git packages https://github.com/openwrt/packages.git;openwrt-${{ matrix.sdk_ver }}
+          src-git luci https://github.com/openwrt/luci.git;openwrt-${{ matrix.sdk_ver }}
+          src-git routing https://github.com/openwrt/routing.git;openwrt-${{ matrix.sdk_ver }}
+          src-git telephony https://github.com/openwrt/telephony.git;openwrt-${{ matrix.sdk_ver }}
+          EOF
 
           #echo 'CONFIG_ALL=y' >> .config
           
