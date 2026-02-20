@@ -1,0 +1,46 @@
+name: Build Passwall2
+
+on:
+  push:
+    paths:
+        - .github/workflows/Passwall2.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}-${{ matrix.branch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x86_64
+        branch:
+          - openwrt-24.10
+
+    steps:
+      # - uses: actions/checkout@main
+      #   with:
+      #     fetch-depth: 0
+
+      - name: Checkout Source Code
+        run: |
+          git clone --depth 1 https://github.com/Openwrt-Passwall/openwrt-passwall
+      - name: Building packages
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
+          FEEDNAME: packages_ci
+          PACKAGES: luci-app-passwall
+          NO_REFRESH_CHECK: true
+
+      - name: ipks
+        run: |
+          cd bin/packages/
+          find . -name "*.ipk"
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: luci-app-argon-${{ matrix.arch }}-${{ matrix.branch }}
+          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
