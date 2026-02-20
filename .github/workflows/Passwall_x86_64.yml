@@ -125,6 +125,7 @@ jobs:
           cd openwrt-sdk
           cat > feeds.conf.default << EOF
           src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
+          src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
           src-git base https://github.com/openwrt/openwrt.git;openwrt-${{ matrix.sdk_ver }}
           src-git packages https://github.com/openwrt/packages.git;openwrt-${{ matrix.sdk_ver }}
           src-git luci https://github.com/openwrt/luci.git;openwrt-${{ matrix.sdk_ver }}
@@ -171,6 +172,7 @@ jobs:
           # make defconfig
 
           make defconfig
+          
           make package/feeds/luci/luci-base/compile -j$(nproc)
           make package/feeds/passwall/luci-app-passwall/compile -j$(nproc)
           # make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc)
