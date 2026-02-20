@@ -118,12 +118,6 @@ jobs:
           file_name=$(echo ${{matrix.sdk_url}} | awk -F/ '{print $NF}')
           mkdir openwrt-sdk && tar --zstd -x -f $file_name -C ./openwrt-sdk --strip-components=1
           ls openwrt-sdk  
-        #echo 'CONFIG_ALL=y' >> openwrt-sdk/.config
-          # src-git base https://github.com/openwrt/openwrt.git;openwrt-${{ matrix.sdk_ver }}
-          # src-git packages https://github.com/openwrt/packages.git;openwrt-${{ matrix.sdk_ver }}
-          # src-git luci https://github.com/openwrt/luci.git;openwrt-${{ matrix.sdk_ver }}
-          # src-git routing https://github.com/openwrt/routing.git;openwrt-${{ matrix.sdk_ver }}
-          # src-git telephony https://github.com/openwrt/telephony.git;openwrt-${{ matrix.sdk_ver }}
 
       - name: Build Package passwall
         run: |
@@ -135,50 +129,17 @@ jobs:
           
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-  
-          #--------------------------------------begin_patches------------------------------------------
-          echo "Start applying the patch"
-  
-  
-          rm -rf temp_resp
-          git clone -b master --single-branch https://github.com/openwrt/packages.git temp_resp
-          echo "update golang version"
+
           rm -rf feeds/packages/lang/golang
-          cp -r temp_resp/lang/golang feeds/packages/lang
-          echo "update rust version"
-          rm -rf feeds/packages/lang/rust
-          cp -r temp_resp/lang/rust feeds/packages/lang
-          rm -rf temp_resp
-  
-          git clone -b main --single-branch https://github.com/openwrt/openwrt.git temp_resp
-          cp -f temp_resp/scripts/patch-kernel.sh scripts/
-          rm -rf temp_resp
-  
-          echo "fixed rust host build error"
-          sed -i 's/--set=llvm\.download-ci-llvm=false/--set=llvm.download-ci-llvm=true/' feeds/packages/lang/rust/Makefile
-          grep -q -- '--ci false \\' feeds/packages/lang/rust/Makefile || sed -i '/x\.py \\/a \        --ci false \\' feeds/packages/lang/rust/Makefile
-  
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-  
-          echo "Patch application completed"
-          #--------------------------------------end_patches--------------------------------------------
-  
-          # echo "CONFIG_ALL_NONSHARED=n" > .config
-          # echo "CONFIG_ALL_KMODS=n" >> .config
-          # echo "CONFIG_ALL=n" >> .config
-          # echo "CONFIG_AUTOREMOVE=n" >> .config
-          # echo "CONFIG_SIGNED_PACKAGES=n" >> .config
-          # make defconfig
+          git clone --depth 1 https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/lang/golang
 
           make defconfig
           
           make package/feeds/luci/luci-base/compile -j$(nproc)
-          make package/feeds/passwall/luci-app-passwall/compile -j$(nproc)
-          # make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc)
+
+          
+          make package/feeds/passwall/luci-app-passwall/compile -j$(nproc) || make package/feeds/passwall/luci-app-passwall/compile -j1 V=sc || exit 0
           find . -name "*.ipk" -print
-          # make package/feeds/passwall/luci-app-passwall/compile -j$(nproc) || make package/feeds/passwall/luci-app-passwall/compile -j1 V=sc || exit 0
-          # make package/feeds/passwall2/luci-app-passwall2/compile -j$(nproc) || make package/feeds/passwall2/luci-app-passwall2/compile -j1 V=sc || exit 0
           pkgs=$(ls package/feeds/pspackages)
           for pkg in $pkgs
           do
