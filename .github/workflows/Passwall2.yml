@@ -42,5 +42,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@main
         with:
-          name: luci-app-argon-${{ matrix.arch }}-${{ matrix.branch }}
+          name: luci-app-passwall-${{ matrix.arch }}-${{ matrix.branch }}
           path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
