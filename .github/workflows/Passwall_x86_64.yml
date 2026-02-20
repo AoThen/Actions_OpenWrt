@@ -125,17 +125,48 @@ jobs:
           echo "src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
           echo "src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main" >> "feeds.conf.default"
 
-          echo 'CONFIG_ALL=y' >> .config
+          #echo 'CONFIG_ALL=y' >> .config
           
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
+          #--------------------------------------begin_patches------------------------------------------
+          echo "Start applying the patch"
+  
+          rm -rf temp_resp
+          git clone -b master --single-branch https://github.com/openwrt/packages.git temp_resp
+          echo "update golang version"
           rm -rf feeds/packages/lang/golang
-          git clone --depth 1 https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/lang/golang
-
+          cp -r temp_resp/lang/golang feeds/packages/lang
+          echo "update rust version"
+          rm -rf feeds/packages/lang/rust
+          cp -r temp_resp/lang/rust feeds/packages/lang
+          rm -rf temp_resp
+  
+          git clone -b main --single-branch https://github.com/openwrt/openwrt.git temp_resp
+          cp -f temp_resp/scripts/patch-kernel.sh scripts/
+          rm -rf temp_resp
+  
+          echo "fixed rust host build error"
+          sed -i 's/--set=llvm\.download-ci-llvm=false/--set=llvm.download-ci-llvm=true/' feeds/packages/lang/rust/Makefile
+          grep -q -- '--ci false \\' feeds/packages/lang/rust/Makefile || sed -i '/x\.py \\/a \        --ci false \\' feeds/packages/lang/rust/Makefile
+  
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+  
+          echo "Patch application completed"
+          #--------------------------------------end_patches--------------------------------------------
+        
+          # rm -rf feeds/packages/lang/golang
+          # git clone --depth 1 https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/lang/golang
+          echo "CONFIG_ALL_NONSHARED=n" > .config
+          echo "CONFIG_ALL_KMODS=n" >> .config
+          echo "CONFIG_ALL=n" >> .config
+          echo "CONFIG_AUTOREMOVE=n" >> .config
+          echo "CONFIG_SIGNED_PACKAGES=n" >> .config
           make defconfig
           
-          make package/feeds/luci/luci-base/compile -j$(nproc)
+          #make package/feeds/luci/luci-base/compile -j$(nproc)
 
           
           make package/feeds/passwall/luci-app-passwall/compile -j$(nproc) || make package/feeds/passwall/luci-app-passwall/compile -j1 V=sc || exit 0
