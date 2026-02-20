@@ -128,12 +128,8 @@ jobs:
       - name: Build Package passwall
         run: |
           cd openwrt-sdk
-          cat > feeds.conf.default << EOF
-          src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
-          src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
-          EOF
-
-
+          echo "src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
+          echo "src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main" >> "feeds.conf.default"
 
           echo 'CONFIG_ALL=y' >> .config
           
