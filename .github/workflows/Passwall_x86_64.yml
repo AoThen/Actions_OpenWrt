@@ -95,6 +95,7 @@ jobs:
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
           sudo timedatectl set-timezone "$TZ"
+          
       # docker rmi `docker images -q`
       # - name: Download SDK
       #   run: |
@@ -117,8 +118,12 @@ jobs:
           file_name=$(echo ${{matrix.sdk_url}} | awk -F/ '{print $NF}')
           mkdir openwrt-sdk && tar --zstd -x -f $file_name -C ./openwrt-sdk --strip-components=1
           ls openwrt-sdk  
- #echo 'CONFIG_ALL=y' >> openwrt-sdk/.config
-
+        #echo 'CONFIG_ALL=y' >> openwrt-sdk/.config
+          # src-git base https://github.com/openwrt/openwrt.git;openwrt-${{ matrix.sdk_ver }}
+          # src-git packages https://github.com/openwrt/packages.git;openwrt-${{ matrix.sdk_ver }}
+          # src-git luci https://github.com/openwrt/luci.git;openwrt-${{ matrix.sdk_ver }}
+          # src-git routing https://github.com/openwrt/routing.git;openwrt-${{ matrix.sdk_ver }}
+          # src-git telephony https://github.com/openwrt/telephony.git;openwrt-${{ matrix.sdk_ver }}
 
       - name: Build Package passwall
         run: |
@@ -126,13 +131,12 @@ jobs:
           cat > feeds.conf.default << EOF
           src-git pspackages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
           src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
-          src-git base https://github.com/openwrt/openwrt.git;openwrt-${{ matrix.sdk_ver }}
-          src-git packages https://github.com/openwrt/packages.git;openwrt-${{ matrix.sdk_ver }}
-          src-git luci https://github.com/openwrt/luci.git;openwrt-${{ matrix.sdk_ver }}
-          src-git routing https://github.com/openwrt/routing.git;openwrt-${{ matrix.sdk_ver }}
-          src-git telephony https://github.com/openwrt/telephony.git;openwrt-${{ matrix.sdk_ver }}
           EOF
-  
+
+
+
+          echo 'CONFIG_ALL=y' >> .config
+          
           ./scripts/feeds update -a
           ./scripts/feeds install -a
   
@@ -164,11 +168,11 @@ jobs:
           echo "Patch application completed"
           #--------------------------------------end_patches--------------------------------------------
   
-          echo "CONFIG_ALL_NONSHARED=n" > .config
-          echo "CONFIG_ALL_KMODS=n" >> .config
-          echo "CONFIG_ALL=n" >> .config
-          echo "CONFIG_AUTOREMOVE=n" >> .config
-          echo "CONFIG_SIGNED_PACKAGES=n" >> .config
+          # echo "CONFIG_ALL_NONSHARED=n" > .config
+          # echo "CONFIG_ALL_KMODS=n" >> .config
+          # echo "CONFIG_ALL=n" >> .config
+          # echo "CONFIG_AUTOREMOVE=n" >> .config
+          # echo "CONFIG_SIGNED_PACKAGES=n" >> .config
           # make defconfig
 
           make defconfig
